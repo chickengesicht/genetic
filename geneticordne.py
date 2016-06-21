@@ -36,6 +36,17 @@ def randomgens(anz):
 		for b in range(schueleranz):
 			result[a].append([[random.randint(1,3),random.randint(1,vortragsanz)],[random.randint(1,3),random.randint(1,vortragsanz)]])
 	return result
+def sinnvollstart(original,anz):
+	result=[]
+	for a in range(anz):
+		result.append([])
+		for b in range(schueleranz):
+			result[a].append([[random.randint(1,3),original[b][0]],[random.randint(1,3),original[b][1]]])
+			if random.random()<0.3:
+				result[a][b][0][1]=random.randint(1,vortragsanz)
+			if random.random()<0.3:
+				result[a][b][1][1]=random.randint(1,vortragsanz)
+	return result
 def fitness(gene):
 	fitlist=[]
 	gencount=0
@@ -62,7 +73,7 @@ def fitness(gene):
 			for b in a:
 				zfcount+=1
 				if b>maxSinZFproV:
-					fitlist[gencount]+=(10000+(b-25)*10000)
+					fitlist[gencount]+=(10000+(b-maxSinZFproV)*10000)
 				elif b<minSinZFproV and b!=0:
 					fitlist[gencount]+=10000
 				elif b!=0 and not (zfcount in vortragsperfekt[vcount]):
@@ -81,8 +92,6 @@ def createnewgens(gene,fitlist):
 	gcount=0
 	for a in gene:
 		mymutrate=random.random()*maxmutrate
-		if random.random()<0.3:
-			mymutrate=0
 		tmp=weighted_choice(dieweights)
 		choose1=superlist[tmp][1]
 		second=weighted_choice(dieweights)
@@ -117,7 +126,7 @@ def createnewgens(gene,fitlist):
 def geneticsearch():
 	generation=0
 	tmp=100000000
-	gene=randomgens(genanz)
+	gene=sinnvollstart(schuelerperfekt,genanz)
 	while tmp>0:
 		fitnesses=fitness(gene)
 		tmp=min(fitnesses)
