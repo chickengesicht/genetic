@@ -1,7 +1,16 @@
 #vortragsperfekt: mehrdimensionale liste mit zeitfensterdaten
 #schuelerperfekt: mehrdimensionale liste mit gewählten vortragen
 #genarray: jeder schüler als einzelner array, pro schüler zwei arrays mit je einem vortrag und einem Zeitfenster
-import random,time
+x = 0
+y = 20
+import os
+os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x,y)
+import random,time,pygame
+pygame.init()
+scwidth=1900
+scheight=1000
+screen=pygame.display.set_mode([scwidth,scheight])
+screen.fill([255,255,255])
 schuelerperfekt=[]
 vortragsperfekt=[]
 millis = int(round(time.time() * 1000))
@@ -23,6 +32,45 @@ for a in range(vortragsanz):
 		if not(b in rin):
 			rin.append(b)
 	vortragsperfekt.append(rin)
+def drawgen(gen):
+	screen.fill([255,255,255])
+	left=0
+	top=0
+	for a in range(schueleranz):
+		pygame.draw.rect(screen,[255,0,0],[left,top,10,10],0)
+		left+=20
+		if left>=scwidth-10:
+			left=0
+			top+=20
+	left=0
+	top=900
+	for a in range(vortragsanz):
+		pygame.draw.rect(screen,[0,0,255],[left,top,15,15],0)
+		left+=25
+		if left>=scwidth-10:
+			left=0
+			top+=25
+	count=0
+	for a in gen:
+		startpos=[5+(count*20)%(scwidth),5+((count*20)//(scwidth))*20]
+		endpos=[7+(a[0][1]*25)%(scwidth-10),907+((a[0][1]*25)//(scwidth-10))*25]
+		if a[0][0]==1:
+			color=[0,0,0]
+		if a[0][0]==2:
+			color=[0,255,0]
+		if a[0][0]==3:
+			color=[255,0,255]
+		pygame.draw.line(screen,color,startpos,endpos)
+		endpos=[7+((a[1][1]-1)*25)%(scwidth-10),907+((a[1][1]*25)//(scwidth-10))*25]
+		if a[1][0]==1:
+			color=[0,0,0]
+		if a[1][0]==2:
+			color=[0,255,0]
+		if a[1][0]==3:
+			color=[255,0,255]
+		pygame.draw.line(screen,color,startpos,endpos)
+		count+=1
+	pygame.display.flip()
 def weighted_choice(weights):  #aus dem internet
     rnd = random.random() * sum(weights)
     for i, w in enumerate(weights):
@@ -50,7 +98,7 @@ def sinnvollstart(original,anz):
 def fitness(gene):
 	fitlist=[]
 	gencount=0
-	for s in gene:
+	for s in gene:   
 		fitlist.append(0)
 		vschuel=[]
 		for a in range(vortragsanz):
@@ -129,10 +177,11 @@ def geneticsearch():
 	gene=sinnvollstart(schuelerperfekt,genanz)
 	while tmp>0:
 		fitnesses=fitness(gene)
+		bestgen=gene[fitnesses.index(min(fitnesses))]
+		drawgen(bestgen)
 		tmp=min(fitnesses)
 		print ("bestfitness: "+str(tmp)+"   generation:"+str(generation))
 		gene=createnewgens(gene,fitnesses)
 		generation+=1
-	bestgen=gene[fitnesses.index(min(fitnesses))]
 geneticsearch()
 print (int(round(time.time() * 1000))-millis)
