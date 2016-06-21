@@ -9,11 +9,11 @@ minSinZFproV=5
 maxSinZFproV=25
 vortragsanz=67
 schueleranz=320
-genanz=100
-mutrate=0.003
+genanz=1000
+maxmutrate=0.01
 dieweights=[]
 for a in range(genanz):
-	dieweights.append(60.0/(a+2))
+	dieweights.append(60.0/(a+3))   #probability function
 for a in range(schueleranz):  #zufällige wahlen zu testzwecken
 	schuelerperfekt.append([random.randint(1,vortragsanz),random.randint(1,vortragsanz),random.randint(1,vortragsanz)])
 for a in range(vortragsanz):
@@ -54,7 +54,7 @@ def fitness(gene):
 					else:
 						fitlist[gencount]+=1
 			if vz[0][1]==vz[1][1]:
-				fitlist[gencount]+=1000
+				fitlist[gencount]+=10000
 			scount+=1	
 		vcount=0
 		for a in vschuel:
@@ -62,11 +62,11 @@ def fitness(gene):
 			for b in a:
 				zfcount+=1
 				if b>maxSinZFproV:
-					fitlist[gencount]+=1000
+					fitlist[gencount]+=(10000+(b-25)*10000)
 				elif b<minSinZFproV and b!=0:
-					fitlist[gencount]+=1000
+					fitlist[gencount]+=10000
 				elif b!=0 and not (zfcount in vortragsperfekt[vcount]):
-					fitlist[gencount]+=1000
+					fitlist[gencount]+=10000
 			vcount+=1
 		gencount+=1	
 	return fitlist
@@ -80,7 +80,7 @@ def createnewgens(gene,fitlist):
 	superlist.sort()
 	gcount=0
 	for a in gene:
-		mymutrate=random.random()*0.01
+		mymutrate=random.random()*maxmutrate
 		if random.random()<0.3:
 			mymutrate=0
 		tmp=weighted_choice(dieweights)
@@ -115,10 +115,15 @@ def createnewgens(gene,fitlist):
 		gcount+=1
 	return newgene
 def geneticsearch():
+	generation=0
+	tmp=100000000
 	gene=randomgens(genanz)
-	while 1:
+	while tmp>0:
 		fitnesses=fitness(gene)
-		print (min(fitnesses))
+		tmp=min(fitnesses)
+		print ("bestfitness: "+str(tmp)+"   generation:"+str(generation))
 		gene=createnewgens(gene,fitnesses)
+		generation+=1
+	bestgen=gene[fitnesses.index(min(fitnesses))]
 geneticsearch()
 print (int(round(time.time() * 1000))-millis)
