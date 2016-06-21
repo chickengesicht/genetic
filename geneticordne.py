@@ -53,7 +53,7 @@ def drawgen(gen):
 	count=0
 	for a in gen:
 		startpos=[5+(count*20)%(scwidth),5+((count*20)//(scwidth))*20]
-		endpos=[7+(a[0][1]*25)%(scwidth-10),907+((a[0][1]*25)//(scwidth-10))*25]
+		endpos=[7+((a[0][1]-1)*25)%(scwidth-10),907+((a[0][1]*25)//(scwidth-10))*25]
 		if a[0][0]==1:
 			color=[0,0,0]
 		if a[0][0]==2:
