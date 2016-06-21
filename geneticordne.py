@@ -11,6 +11,9 @@ vortragsanz=67
 schueleranz=320
 genanz=100
 mutrate=0.003
+dieweights=[]
+for a in range(genanz):
+	dieweights.append(60.0/(a+2))
 for a in range(schueleranz):  #zufällige wahlen zu testzwecken
 	schuelerperfekt.append([random.randint(1,vortragsanz),random.randint(1,vortragsanz),random.randint(1,vortragsanz)])
 for a in range(vortragsanz):
@@ -20,6 +23,12 @@ for a in range(vortragsanz):
 		if not(b in rin):
 			rin.append(b)
 	vortragsperfekt.append(rin)
+def weighted_choice(weights):  #aus dem internet
+    rnd = random.random() * sum(weights)
+    for i, w in enumerate(weights):
+        rnd -= w
+        if rnd < 0:
+            return i
 def randomgens(anz):
 	result=[]
 	for a in range(anz):
@@ -63,10 +72,21 @@ def fitness(gene):
 	return fitlist
 def createnewgens(gene,fitlist):
 	newgene=[]
+	superlist=[]
+	count=0
 	for a in gene:
-		pass
+		superlist.append([fitlist[count],a])
+		count+=1
+	superlist.sort()
+	for a in gene:
+		tmp=weighted_choice(dieweights)
+		choose1=superlist[tmp][1]
+		second=weighted_choice(dieweights)
+		while second==tmp:  #stellt sicher, dass das selbe gen nicht zwei mal ausgewählt wird
+			second=weighted_choice(dieweights)
+		choose2=superlist[second][1]
 gene=randomgens(genanz)
 fitnesses=fitness(gene)
-for a in fitnesses:
+for a in dieweights:
 	print (a)
 print (int(round(time.time() * 1000))-millis)
