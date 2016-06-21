@@ -32,15 +32,15 @@ def weighted_choice(weights):  #aus dem internet
 def randomgens(anz):
 	result=[]
 	for a in range(anz):
-		result.append([]);
+		result.append([])
 		for b in range(schueleranz):
-			result[a].append([[random.randint(1,3),random.randint(1,vortragsanz)],[random.randint(1,3),random.randint(1,vortragsanz)]]);
+			result[a].append([[random.randint(1,3),random.randint(1,vortragsanz)],[random.randint(1,3),random.randint(1,vortragsanz)]])
 	return result
 def fitness(gene):
 	fitlist=[]
-	gencount=0;
+	gencount=0
 	for s in gene:
-		fitlist.append(0);
+		fitlist.append(0)
 		vschuel=[]
 		for a in range(vortragsanz):
 			vschuel.append([0,0,0])
@@ -78,15 +78,47 @@ def createnewgens(gene,fitlist):
 		superlist.append([fitlist[count],a])
 		count+=1
 	superlist.sort()
+	gcount=0
 	for a in gene:
+		mymutrate=random.random()*0.01
+		if random.random()<0.3:
+			mymutrate=0
 		tmp=weighted_choice(dieweights)
 		choose1=superlist[tmp][1]
 		second=weighted_choice(dieweights)
 		while second==tmp:  #stellt sicher, dass das selbe gen nicht zwei mal ausgewählt wird
 			second=weighted_choice(dieweights)
 		choose2=superlist[second][1]
-gene=randomgens(genanz)
-fitnesses=fitness(gene)
-for a in dieweights:
-	print (a)
+		newgene.append([])
+		for b in range(schueleranz):
+			newgene[gcount].append([[],[]])
+			for c in range(4):
+				if c==0:
+					tp1=0
+					tp2=0
+				if c==1:
+					tp1=0
+					tp2=1
+				if c==2:
+					tp1=1
+					tp2=0
+				if c==3:
+					tp1=1
+					tp2=1
+				if random.random()<mymutrate:
+					newgene[gcount][b][tp1].append(random.randint(1,3))
+				else:
+					if random.random()<0.5:
+						newgene[gcount][b][tp1].append(choose1[b][tp1][tp2])
+					else:
+						newgene[gcount][b][tp1].append(choose2[b][tp1][tp2])
+		gcount+=1
+	return newgene
+def geneticsearch():
+	gene=randomgens(genanz)
+	while 1:
+		fitnesses=fitness(gene)
+		print (min(fitnesses))
+		gene=createnewgens(gene,fitnesses)
+geneticsearch()
 print (int(round(time.time() * 1000))-millis)
