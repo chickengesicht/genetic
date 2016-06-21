@@ -9,6 +9,8 @@ minSinZFproV=5
 maxSinZFproV=25
 vortragsanz=67
 schueleranz=320
+genanz=100
+mutrate=0.003
 for a in range(schueleranz):  #zufällige wahlen zu testzwecken
 	schuelerperfekt.append([random.randint(1,vortragsanz),random.randint(1,vortragsanz),random.randint(1,vortragsanz)])
 for a in range(vortragsanz):
@@ -59,7 +61,11 @@ def fitness(gene):
 			vcount+=1
 		gencount+=1	
 	return fitlist
-gene=randomgens(100)
+def createnewgens(gene,fitlist):
+	newgene=[]
+	for a in gene:
+		pass
+gene=randomgens(genanz)
 fitnesses=fitness(gene)
 for a in fitnesses:
 	print (a)
