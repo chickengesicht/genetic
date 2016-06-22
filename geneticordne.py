@@ -1,6 +1,7 @@
 #vortragsperfekt: mehrdimensionale liste mit zeitfensterdaten
 #schuelerperfekt: mehrdimensionale liste mit gewählten vortragen
 #genarray: jeder schüler als einzelner array, pro schüler zwei arrays mit je einem vortrag und einem Zeitfenster
+superminuswert=0
 x = 0
 y = 20
 import os
@@ -41,6 +42,7 @@ for a in range(vortragsanz):
 			rin.append(b)
 	vortragsperfekt.append(rin)
 def drawgen(gen,bfit,generation):
+	global superminuswert
 	for event in pygame.event.get():
 		if event.type == pygame.MOUSEBUTTONUP:
 			None 
@@ -72,7 +74,15 @@ def drawgen(gen,bfit,generation):
 	font=pygame.font.Font(None,20)
 	szffail=0
 	sdoublev=0
+	upwahlen=0
+	drwahlen=0
 	for a in gen:
+		for z in a:
+			if z[1]!=schuelerperfekt[count][0] and z[1]!=schuelerperfekt[count][1]:
+				if z[1]!=schuelerperfekt[count][2]:
+					upwahlen+=1
+				else:
+					drwahlen+=1
 		if a[0][0]==a[1][0]:
 			szffail+=1
 		if a[0][1]==a[1][1]:
@@ -99,6 +109,7 @@ def drawgen(gen,bfit,generation):
 	belegtevortr=0
 	zuklein=0
 	zfpasstnicht=0
+	dreier=0
 	for a in vschuel:
 		text=font.render(str(a[0]),1,(0,0,0))
 		screen.blit(text,[vcount*25,scheight-273])
@@ -124,23 +135,45 @@ def drawgen(gen,bfit,generation):
 			belegtevortr+=1
 			if a[2]<5:
 				zuklein+=1
+		if a[0]>0 and a[1]>0 and a[2]>0:
+			dreier+=1
 		vcount+=1
 	font=pygame.font.Font(None,20)
-	text=font.render("Schueler zwei mal im selben ZF: "+str(szffail),1,(0,0,0))
-	screen.blit(text,[400,scheight-153])
-	text=font.render("Schueler zwei mal im selben Vortrag: "+str(sdoublev),1,(0,0,0))
-	screen.blit(text,[400,scheight-123])
-	text=font.render("vortrags in unpassenden zfs: "+str(zfpasstnicht),1,(0,0,0))
-	screen.blit(text,[10,scheight-153])
-	text=font.render("Zeitfenster mit zu wenig Teilnehmern: "+str(zuklein),1,(0,0,0))
-	screen.blit(text,[10,scheight-123])
+	if superminuswert==0:
+		text=font.render("Schueler zwei mal im selben ZF: "+str(szffail),1,(0,0,0))
+		screen.blit(text,[400,scheight-153])
+		text=font.render("Schueler zwei mal im selben Vortrag: "+str(sdoublev),1,(0,0,0))
+		screen.blit(text,[400,scheight-123])
+		text=font.render("vortrags die in drei ZFs gehalten werden: "+str(dreier),1,(0,0,0))
+		screen.blit(text,[400,scheight-93])
+		text=font.render("vortrags in unpassenden zfs: "+str(zfpasstnicht),1,(0,0,0))
+		screen.blit(text,[10,scheight-153])
+		text=font.render("Zeitfenster mit zu wenig Teilnehmern: "+str(zuklein),1,(0,0,0))
+		screen.blit(text,[10,scheight-123])
+		pygame.draw.rect(screen,[255,0,0],[800+generation,scheight-5-bfit//1000000,1,1],1)
+	else:
+		pygame.draw.rect(screen,[255,0,0],[800+generation-superminuswert,scheight-5-bfit//10,1,1],1)
+		text=font.render("schueler in unpassendem vortrag: "+str(upwahlen),1,(0,0,0))
+		screen.blit(text,[10,scheight-153])
+		text=font.render("schueler in drittwahl: "+str(drwahlen),1,(0,0,0))
+		screen.blit(text,[10,scheight-123])
+		if generation-superminuswert>1000:
+			superminuswert+=1000
 	text=font.render("Belegte Zeitfenster: "+str(belegtevortr),1,(0,0,0))
 	screen.blit(text,[10,scheight-93])
 	text=font.render("generation: "+str(generation),1,(0,0,0))
 	screen.blit(text,[10,scheight-63])
 	text=font.render("bestfitness: "+str(bfit),1,(0,0,0))
 	screen.blit(text,[10,scheight-33])
-	pygame.draw.rect(screen,[255,0,0],[800+generation,scheight-5-bfit//1000000,1,1],1)
+	if bfit<1000000 and superminuswert==0:
+		screen.fill([255,255,255])
+		superminuswert=generation
+		pygame.draw.line(screen,[0,0,0],[800,scheight-175],[800,scheight-5])
+		pygame.draw.line(screen,[0,0,0],[800,scheight-5],[scwidth-100,scheight-5])
+		text=font.render("fitness",1,(0,0,0))
+		screen.blit(text,[780,scheight-195])
+		text=font.render("generation",1,(0,0,0))
+		screen.blit(text,[scwidth-90,scheight-15])
 	pygame.display.flip()
 def weighted_choice(weights):  #aus dem internet
     rnd = random.random() * sum(weights)
@@ -192,6 +225,10 @@ def fitness(gene):
 		haltcount=0
 		for a in vschuel:
 			zfcount=0
+			if a[0]!=0 and a[1]!=0 and a[2]!=0 and a[0]+a[1]+a[2]<maxSinZFproV*2:
+				vcount+=1
+				fitlist[gencount]+=8*1000000+500*min(a[0],a[1],a[2])
+				continue
 			for b in a:
 				zfcount+=1
 				if b!=0:
@@ -203,7 +240,7 @@ def fitness(gene):
 					fitlist[gencount]+=(1000000+(b-maxSinZFproV)*1000000)
 				if b<minSinZFproV and b!=0:
 					fitlist[gencount]+=b*1000000
-			vcount+=1
+			vcount+=1 
 		if haltcount>vortragsanz:
 			fitlist[gencount]+=20*(haltcount-vortragsanz)
 		gencount+=1	
