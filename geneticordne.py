@@ -51,9 +51,16 @@ def drawgen(gen):
 			left=0
 			top+=25
 	count=0
+	vschuel=[]
+	for a in range(vortragsanz):
+		vschuel.append([0,0,0])
+	for vz in gen:
+		for z in vz:
+			vschuel[z[1]-1][z[0]-1]+=1
+	font=pygame.font.Font(None,20)
 	for a in gen:
 		startpos=[5+(count*20)%(scwidth),5+((count*20)//(scwidth))*20]
-		endpos=[7+((a[0][1]-1)*25)%(scwidth-10),907+((a[0][1]*25)//(scwidth-10))*25]
+		endpos=[7+((a[0][1]-1)*25)%(scwidth-10),scheight-93+((a[0][1]*25)//(scwidth-10))*25]
 		if a[0][0]==1:
 			color=[0,0,0]
 		if a[0][0]==2:
@@ -61,7 +68,7 @@ def drawgen(gen):
 		if a[0][0]==3:
 			color=[255,0,255]
 		pygame.draw.line(screen,color,startpos,endpos)
-		endpos=[7+((a[1][1]-1)*25)%(scwidth-10),907+((a[1][1]*25)//(scwidth-10))*25]
+		endpos=[7+((a[1][1]-1)*25)%(scwidth-10),scheight-93+((a[1][1]*25)//(scwidth-10))*25]
 		if a[1][0]==1:
 			color=[0,0,0]
 		if a[1][0]==2:
@@ -70,6 +77,15 @@ def drawgen(gen):
 			color=[255,0,255]
 		pygame.draw.line(screen,color,startpos,endpos)
 		count+=1
+	vcount=0
+	for a in vschuel:
+		text=font.render(str(a[0]),1,(0,0,0))
+		screen.blit(text,[vcount*25,scheight-73])
+		text=font.render(str(a[1]),1,(0,255,0))
+		screen.blit(text,[vcount*25,scheight-53])
+		text=font.render(str(a[2]),1,(255,0,255))
+		screen.blit(text,[vcount*25,scheight-33])
+		vcount+=1
 	pygame.display.flip()
 def weighted_choice(weights):  #aus dem internet
     rnd = random.random() * sum(weights)
@@ -163,7 +179,10 @@ def createnewgens(gene,fitlist):
 					tp1=1
 					tp2=1
 				if random.random()<mymutrate:
-					newgene[gcount][b][tp1].append(random.randint(1,3))
+					if tp2==0:
+						newgene[gcount][b][tp1].append(random.randint(1,3))
+					else:
+						newgene[gcount][b][tp1].append(random.randint(1,vortragsanz))
 				else:
 					if random.random()<0.5:
 						newgene[gcount][b][tp1].append(choose1[b][tp1][tp2])
