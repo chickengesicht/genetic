@@ -27,6 +27,7 @@ vortragsanz=67
 schueleranz=320
 genanz=1000
 maxmutrate=0.015
+supermutationrate=0.01
 dieweights=[]
 for a in range(genanz):
 	dieweights.append(60.0/(a+3))   #probability function
@@ -193,14 +194,15 @@ def fitness(gene):
 			zfcount=0
 			for b in a:
 				zfcount+=1
-				if b>maxSinZFproV:
-					fitlist[gencount]+=(1000000+(b-maxSinZFproV)*1000000)
-				elif b<minSinZFproV and b!=0:
-					fitlist[gencount]+=b*1000000
-				elif b!=0 and not (zfcount in vortragsperfekt[vcount]):
-					fitlist[gencount]+=1000000
 				if b!=0:
 					haltcount+=1
+				if b!=0 and not (zfcount in vortragsperfekt[vcount]):
+					fitlist[gencount]+=1000000+b*500
+					continue
+				if b>maxSinZFproV:
+					fitlist[gencount]+=(1000000+(b-maxSinZFproV)*1000000)
+				if b<minSinZFproV and b!=0:
+					fitlist[gencount]+=b*1000000
 			vcount+=1
 		if haltcount>vortragsanz:
 			fitlist[gencount]+=20*(haltcount-vortragsanz)
@@ -224,6 +226,9 @@ def createnewgens(gene,fitlist):
 			second=weighted_choice(dieweights)
 		choose2=superlist[second][1]
 		newgene.append([])
+		#wegmach=-1
+		#if random.random()<supermutationrate:
+		#	wegmach=random.randint(1,vortragsanz)
 		for b in range(schueleranz):
 			newgene[gcount].append([[],[]])
 			for c in range(4):
@@ -249,6 +254,8 @@ def createnewgens(gene,fitlist):
 						newgene[gcount][b][tp1].append(choose1[b][tp1][tp2])
 					else:
 						newgene[gcount][b][tp1].append(choose2[b][tp1][tp2])
+				#if tp2==1 and newgene[gcount][b][tp1][1]==wegmach:
+				#	newgene[gcount][b][tp1][1]=random.randint(1,vortragsanz)
 		gcount+=1
 	return newgene
 def geneticsearch():
