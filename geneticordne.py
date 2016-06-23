@@ -139,32 +139,32 @@ def drawgen(gen,bfit,generation):
 			dreier+=1
 		vcount+=1
 	font=pygame.font.Font(None,20)
-	if superminuswert==0:
-		text=font.render("Schueler zwei mal im selben ZF: "+str(szffail),1,(0,0,0))
-		screen.blit(text,[400,scheight-153])
-		text=font.render("Schueler zwei mal im selben Vortrag: "+str(sdoublev),1,(0,0,0))
-		screen.blit(text,[400,scheight-123])
-		text=font.render("vortrags die in drei ZFs gehalten werden: "+str(dreier),1,(0,0,0))
-		screen.blit(text,[400,scheight-93])
-		text=font.render("vortrags in unpassenden zfs: "+str(zfpasstnicht),1,(0,0,0))
-		screen.blit(text,[10,scheight-153])
-		text=font.render("Zeitfenster mit zu wenig Teilnehmern: "+str(zuklein),1,(0,0,0))
-		screen.blit(text,[10,scheight-123])
-		pygame.draw.rect(screen,[255,0,0],[800+generation,scheight-5-bfit//1000000,1,1],1)
-	else:
-		pygame.draw.rect(screen,[255,0,0],[800+generation-superminuswert,scheight-5-bfit//10,1,1],1)
-		text=font.render("schueler in unpassendem vortrag: "+str(upwahlen),1,(0,0,0))
-		screen.blit(text,[10,scheight-153])
-		text=font.render("schueler in drittwahl: "+str(drwahlen),1,(0,0,0))
-		screen.blit(text,[10,scheight-123])
-		if generation-superminuswert>1000:
-			superminuswert+=1000
+	text=font.render("Schueler zwei mal im selben ZF: "+str(szffail),1,(0,0,0))
+	screen.blit(text,[400,scheight-153])
+	text=font.render("Schueler zwei mal im selben Vortrag: "+str(sdoublev),1,(0,0,0))
+	screen.blit(text,[400,scheight-123])
+	text=font.render("vortrags die in drei ZFs gehalten werden: "+str(dreier),1,(0,0,0))
+	screen.blit(text,[400,scheight-93])
+	text=font.render("schueler in unpassendem vortrag: "+str(upwahlen),1,(0,0,0))
+	screen.blit(text,[400,scheight-63])
+	text=font.render("schueler in drittwahl: "+str(drwahlen),1,(0,0,0))
+	screen.blit(text,[400,scheight-33])
+	text=font.render("vortrags in unpassenden zfs: "+str(zfpasstnicht),1,(0,0,0))
+	screen.blit(text,[10,scheight-153])
+	text=font.render("Zeitfenster mit zu wenig Teilnehmern: "+str(zuklein),1,(0,0,0))
+	screen.blit(text,[10,scheight-123])
 	text=font.render("Belegte Zeitfenster: "+str(belegtevortr),1,(0,0,0))
 	screen.blit(text,[10,scheight-93])
 	text=font.render("generation: "+str(generation),1,(0,0,0))
 	screen.blit(text,[10,scheight-63])
 	text=font.render("bestfitness: "+str(bfit),1,(0,0,0))
 	screen.blit(text,[10,scheight-33])
+	pygame.draw.rect(screen,[255,0,0],[800+generation-superminuswert,scheight-5-bfit//10,1,1],1)
+	if superminuswert==0:
+		pygame.draw.rect(screen,[255,0,0],[800+generation,scheight-5-bfit//1000000,1,1],1)
+	else:
+		if generation-superminuswert>1000:
+			superminuswert+=1000
 	if bfit<1000000 and superminuswert==0:
 		screen.fill([255,255,255])
 		superminuswert=generation
