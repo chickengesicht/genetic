@@ -22,6 +22,7 @@ screen.blit(text,[scwidth-90,scheight-15])
 schuelerperfekt=[]
 vortragsperfekt=[]
 millis = int(round(time.time() * 1000))
+levelofdo=0
 minSinZFproV=5
 maxSinZFproV=25
 vortragsanz=67
@@ -163,7 +164,14 @@ def drawgen(gen,bfit,generation):
 	if superminuswert==0:
 		pygame.draw.rect(screen,[255,0,0],[800+generation,scheight-5-bfit//1000000,1,1],1)
 	else:
-		if generation-superminuswert>1000:
+		if generation-superminuswert>=1000:
+			screen.fill([255,255,255])
+			pygame.draw.line(screen,[0,0,0],[800,scheight-175],[800,scheight-5])
+			pygame.draw.line(screen,[0,0,0],[800,scheight-5],[scwidth-100,scheight-5])
+			text=font.render("fitness",1,(0,0,0))
+			screen.blit(text,[780,scheight-195])
+			text=font.render("generation",1,(0,0,0))
+			screen.blit(text,[scwidth-90,scheight-15])
 			superminuswert+=1000
 	if bfit<1000000 and superminuswert==0:
 		screen.fill([255,255,255])
@@ -200,6 +208,7 @@ def sinnvollstart(original,anz):
 				result[a][b][1][1]=random.randint(1,vortragsanz)
 	return result
 def fitness(gene):
+	global levelofdo
 	fitlist=[]
 	gencount=0
 	for s in gene:   
@@ -225,24 +234,25 @@ def fitness(gene):
 		haltcount=0
 		for a in vschuel:
 			zfcount=0
-			if a[0]!=0 and a[1]!=0 and a[2]!=0 and a[0]+a[1]+a[2]<maxSinZFproV*2:
-				vcount+=1
-				fitlist[gencount]+=8*1000000+500*min(a[0],a[1],a[2])
-				continue
+			#if a[0]!=0 and a[1]!=0 and a[2]!=0 and a[0]+a[1]+a[2]<maxSinZFproV*2:
+			#	vcount+=1
+			#	fitlist[gencount]+=8*1000000+500*min(a[0],a[1],a[2])
+			#	continue
 			for b in a:
 				zfcount+=1
 				if b!=0:
 					haltcount+=1
-				if b!=0 and not (zfcount in vortragsperfekt[vcount]):
-					fitlist[gencount]+=1000000+b*500
-					continue
-				if b>maxSinZFproV:
-					fitlist[gencount]+=(1000000+(b-maxSinZFproV)*1000000)
-				if b<minSinZFproV and b!=0:
-					fitlist[gencount]+=b*1000000
+					if b!=0 and not (zfcount in vortragsperfekt[vcount]):
+						fitlist[gencount]+=1000000+b*500
+						continue
+					if levelofdo>0:
+						if b>maxSinZFproV:
+							fitlist[gencount]+=(levelofdo+(b-maxSinZFproV)*levelofdo)
+						if b<minSinZFproV and b!=0:
+							fitlist[gencount]+=b*levelofdo
 			vcount+=1 
 		if haltcount>vortragsanz:
-			fitlist[gencount]+=20*(haltcount-vortragsanz)
+			fitlist[gencount]+=10*(haltcount-vortragsanz)
 		gencount+=1	
 	return fitlist
 def createnewgens(gene,fitlist):
@@ -296,6 +306,7 @@ def createnewgens(gene,fitlist):
 		gcount+=1
 	return newgene
 def geneticsearch():
+	global levelofdo
 	generation=0
 	tmp=100000000
 	gene=sinnvollstart(schuelerperfekt,genanz)
@@ -303,6 +314,8 @@ def geneticsearch():
 		fitnesses=fitness(gene)
 		bestgen=gene[fitnesses.index(min(fitnesses))]
 		tmp=min(fitnesses)
+		if tmp<500 and levelofdo<500:
+			levelofdo+=1
 		drawgen(bestgen,tmp,generation)
 		print ("bestfitness: "+str(tmp)+"   generation:"+str(generation))
 		gene=createnewgens(gene,fitnesses)
