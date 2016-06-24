@@ -314,7 +314,7 @@ def geneticsearch():
 		fitnesses=fitness(gene)
 		bestgen=gene[fitnesses.index(min(fitnesses))]
 		tmp=min(fitnesses)
-		if tmp<100 and levelofdo<100:
+		if tmp<500 and levelofdo<500:
 			levelofdo+=1
 		drawgen(bestgen,tmp,generation)
 		print ("bestfitness: "+str(tmp)+"   generation:"+str(generation))
