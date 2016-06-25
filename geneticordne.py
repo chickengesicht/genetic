@@ -1,6 +1,6 @@
 #vortragsperfekt: mehrdimensionale liste mit zeitfensterdaten
 #schuelerperfekt: mehrdimensionale liste mit gewählten vortragen
-#genarray: jeder schüler als einzelner array, pro schüler zwei arrays mit je einem vortrag und einem Zeitfenster
+#genarray: jeder schüler als einzelner array, pro schüler zwei arrays mit einer zahl die Vortrag und Zeitfenster angibt
 superminuswert=0
 x = 0
 y = 20
@@ -22,6 +22,7 @@ screen.blit(text,[scwidth-90,scheight-15])
 schuelerperfekt=[]
 vortragsperfekt=[]
 alltimeentwick=[]
+allemoeglich=[]
 millis = int(round(time.time() * 1000))
 levelofdo=0
 mode=0
@@ -36,14 +37,19 @@ dieweights=[]
 for a in range(genanz):
 	dieweights.append(60.0/(a+3))   #probability function
 for a in range(schueleranz):  #zufällige wahlen zu testzwecken
-	schuelerperfekt.append([random.randint(1,vortragsanz),random.randint(1,vortragsanz),random.randint(1,vortragsanz)])
+	schuelerperfekt.append([random.randint(0,vortragsanz-1),random.randint(0,vortragsanz-1),random.randint(0,vortragsanz-1)])
 for a in range(vortragsanz):
-	rin=[random.randint(1,3)]
+	rin=[random.randint(0,2)]
 	for c in range(2):
-		b=random.randint(1,3)
+		b=random.randint(0,2)
 		if not(b in rin):
 			rin.append(b)
 	vortragsperfekt.append(rin)
+vcount=0
+for a in vortragsperfekt:
+	for b in a:
+		allemoeglich.append(vcount*3+b)
+	vcount+=1
 def drawgen(gen,bfit,generation,allfit):
 	global superminuswert
 	global mode
@@ -132,7 +138,7 @@ def drawgen(gen,bfit,generation,allfit):
 		vschuel.append([0,0,0])
 	for vz in gen:
 		for z in vz:
-			vschuel[z[0]-1][z[1]-1]+=1
+			vschuel[z//3][z%3]+=1
 	font=pygame.font.Font(None,20)
 	gewaehlt=[]
 	for a in range(vortragsanz):
@@ -146,31 +152,31 @@ def drawgen(gen,bfit,generation,allfit):
 	drwahlen=0
 	for a in gen:
 		for z in a:
-			if z[1]!=schuelerperfekt[count][0] and z[1]!=schuelerperfekt[count][1]:
-				if z[1]!=schuelerperfekt[count][2]:
+			if z//3!=schuelerperfekt[count][0] and z//3!=schuelerperfekt[count][1]:
+				if z//3!=schuelerperfekt[count][2]:
 					upwahlen+=1
 				else:
 					drwahlen+=1
-		if a[0][0]==a[1][0]:
+		if a[0]//3==a[1]//3:
 			sdoublev+=1
-		if a[0][1]==a[1][1]:
+		if a[0]%3==a[1]%3:
 			szffail+=1
 		if mode==0:
 			startpos=[5+(count*20)%(scwidth),5+((count*20)//(scwidth))*20]
-			endpos=[7+((a[0][0]-1)*25)%(scwidth-10),scheight-293+((a[0][0]*25)//(scwidth-10))*25]
-			if a[0][1]==1:
+			endpos=[7+((a[0]//3)*25)%(scwidth-10),scheight-293+(((a[0]//3)*25)//(scwidth-10))*25]
+			if a[0]%3==0:
 				color=[0,0,0]
-			if a[0][1]==2:
+			if a[0]%3==1:
 				color=[0,255,0]
-			if a[0][1]==3:
+			if a[0]%3==2:
 				color=[255,0,255]
 			pygame.draw.line(screen,color,startpos,endpos)
-			endpos=[7+((a[1][0]-1)*25)%(scwidth-10),scheight-293+((a[1][0]*25)//(scwidth-10))*25]
-			if a[1][1]==1:
+			endpos=[7+((a[1]//3)*25)%(scwidth-10),scheight-293+(((a[1]//3)*25)//(scwidth-10))*25]
+			if a[1]%3==0:
 				color=[0,0,0]
-			if a[1][1]==2:
+			if a[1]%3==1:
 				color=[0,255,0]
-			if a[1][1]==3:
+			if a[1]%3==2:
 				color=[255,0,255]
 			pygame.draw.line(screen,color,startpos,endpos)
 		count+=1
@@ -190,19 +196,19 @@ def drawgen(gen,bfit,generation,allfit):
 		text=font.render(str(gewaehlt[vcount]),1,(255,0,0))
 		screen.blit(text,[vcount*25,scheight-223])
 		if a[0]>0:
-			if not (1 in vortragsperfekt[vcount]):
+			if not (0 in vortragsperfekt[vcount]):
 				zfpasstnicht+=1
 			belegtevortr+=1
 			if a[0]<5:
 				zuklein+=1
 		if a[1]>0:
-			if not (2 in vortragsperfekt[vcount]):
+			if not (1 in vortragsperfekt[vcount]):
 				zfpasstnicht+=1
 			belegtevortr+=1
 			if a[1]<5:
 				zuklein+=1
 		if a[2]>0:
-			if not (3 in vortragsperfekt[vcount]):
+			if not (2 in vortragsperfekt[vcount]):
 				zfpasstnicht+=1
 			belegtevortr+=1
 			if a[2]<5:
@@ -265,19 +271,13 @@ def randomgens(anz):
 	for a in range(anz):
 		result.append([])
 		for b in range(schueleranz):
-			a1=random.randint(1,vortragsanz)
-			b1=random.randint(1,vortragsanz)
-			a2=random.choice(vortragsperfekt[a1-1])
-			tmp=vortragsperfekt[b1-1][:]
-			if a2 in tmp:
-				tmp.remove(a2)
-			if tmp:
-				b2=random.choice(tmp)
-			else:
-				b2=random.choice(vortragsperfekt[b1-1])
-			result[a].append([[a1,a2],[b1,b2]])
+			a1=random.choice(allemoeglich)
+			b1=random.choice(allemoeglich)
+			while b1%3==a1%3 or b1//3==a1//3:
+				b1=random.choice(allemoeglich)
+			result[a].append([a1,b1])
 	return result
-def sinnvollstart(original,anz):
+"""def sinnvollstart(original,anz):
 	result=[]
 	for a in range(anz):
 		result.append([])
@@ -287,7 +287,7 @@ def sinnvollstart(original,anz):
 				result[a][b][0][1]=random.randint(1,vortragsanz)
 			if random.random()<0.3:
 				result[a][b][1][1]=random.randint(1,vortragsanz)
-	return result
+	return result"""
 def fitness(gene):
 	global levelofdo
 	fitlist=[]
@@ -300,27 +300,22 @@ def fitness(gene):
 		scount=0
 		for vz in s:
 			for z in vz:
-				vschuel[z[0]-1][z[1]-1]+=1
-				if z[0]!=schuelerperfekt[scount][0] and z[0]!=schuelerperfekt[scount][1]:
-					if z[0]!=schuelerperfekt[scount][2]:
+				vschuel[z//3][z%3]+=1
+				if z//3!=schuelerperfekt[scount][0] and z//3!=schuelerperfekt[scount][1]:
+					if z//3!=schuelerperfekt[scount][2]:
 						fitlist[gencount]+=5
 					else:
 						fitlist[gencount]+=1
-			if vz[0][0]==vz[1][0]:
+			if vz[0]//3==vz[1]//3:
 				fitlist[gencount]+=1000000
-			if vz[0][1]==vz[1][1]:
+			if vz[0]%3==vz[1]%3:
 				fitlist[gencount]+=1000000
 			scount+=1	
 		vcount=0
 		haltcount=0
 		for a in vschuel:
 			zfcount=0
-			#if a[0]!=0 and a[1]!=0 and a[2]!=0 and a[0]+a[1]+a[2]<maxSinZFproV*2:
-			#	vcount+=1
-			#	fitlist[gencount]+=8*1000000+500*min(a[0],a[1],a[2])
-			#	continue
 			for b in a:
-				zfcount+=1
 				if b!=0:
 					haltcount+=1
 					if not (zfcount in vortragsperfekt[vcount]):
@@ -331,6 +326,7 @@ def fitness(gene):
 							fitlist[gencount]+=(levelofdo+(b-maxSinZFproV)*levelofdo)
 						if b<minSinZFproV and b!=0:
 							fitlist[gencount]+=b*levelofdo
+				zfcount+=1
 			vcount+=1 
 		if haltcount>vortragsanz:
 			fitlist[gencount]+=(haltcount-vortragsanz)*levelofdo
@@ -354,43 +350,22 @@ def createnewgens(gene,fitlist):
 			second=weighted_choice(dieweights)
 		choose2=superlist[second][1]
 		newgene.append([])
-		#wegmach=-1
-		#if random.random()<supermutationrate:
-		#	wegmach=random.randint(1,vortragsanz)
 		for b in range(schueleranz):
 			newgene[gcount].append([[],[]])
-			for c in range(4):
-				if c==0:
-					tp1=0
-					tp2=0
-				if c==1:
-					tp1=0
-					tp2=1
-				if c==2:
-					tp1=1
-					tp2=0
-				if c==3:
-					tp1=1
-					tp2=1
+			for c in range(2):
 				if random.random()<mymutrate:
-					if tp2==0:
-						newgene[gcount][b][tp1].append(random.randint(1,vortragsanz))
+					if c==0:
+						newgene[gcount][b][c]=random.choice(allemoeglich)
 					else:
-						tmp=vortragsperfekt[newgene[gcount][b][tp1][0]-1][:]
-						if tp1==1:
-							if newgene[gcount][b][0][1] in tmp:
-								tmp.remove(newgene[gcount][b][0][1])
-						if tmp:	
-							newgene[gcount][b][tp1].append(random.choice(tmp))
-						else:
-							newgene[gcount][b][tp1].append(random.choice(vortragsperfekt[newgene[gcount][b][tp1][0]-1]))
+						tmp=random.choice(allemoeglich)
+						while tmp%3==newgene[gcount][b][0]%3 or tmp//3==newgene[gcount][b][0]//3:
+							tmp=random.choice(allemoeglich)
+						newgene[gcount][b][c]=tmp
 				else:
 					if random.random()<0.5:
-						newgene[gcount][b][tp1].append(choose1[b][tp1][tp2])
+						newgene[gcount][b][c]=choose1[b][c]
 					else:
-						newgene[gcount][b][tp1].append(choose2[b][tp1][tp2])
-				#if tp2==1 and newgene[gcount][b][tp1][1]==wegmach:
-				#	newgene[gcount][b][tp1][1]=random.randint(1,vortragsanz)
+						newgene[gcount][b][c]=choose2[b][c]
 		gcount+=1
 	return newgene
 def geneticsearch():
