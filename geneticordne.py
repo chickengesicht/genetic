@@ -31,7 +31,7 @@ maxSinZFproV=25
 vortragsanz=67
 schueleranz=320
 genanz=1000
-maxmutrate=0.015
+maxmutrate=0.005
 supermutationrate=0.01
 dieweights=[]
 for a in range(genanz):
@@ -145,7 +145,7 @@ def drawgen(gen,bfit,generation,allfit):
 		gewaehlt.append(0)
 	for a in schuelerperfekt:
 		for b in a:
-			gewaehlt[b-1]+=1
+			gewaehlt[b]+=1
 	szffail=0
 	sdoublev=0
 	upwahlen=0
@@ -216,7 +216,7 @@ def drawgen(gen,bfit,generation,allfit):
 		if a[0]>0 and a[1]>0 and a[2]>0:
 			dreier+=1
 		vcount+=1
-	text=font.render("Schueler zwei mal im selben ZF: "+str(szffail),1,(0,0,0))
+	text=font.render("Min Teilenehmermodus: "+str(levelofdo),1,(0,0,0))
 	screen.blit(text,[400,scheight-153])
 	text=font.render("Schueler zwei mal im selben Vortrag: "+str(sdoublev),1,(0,0,0))
 	screen.blit(text,[400,scheight-123])
@@ -226,7 +226,7 @@ def drawgen(gen,bfit,generation,allfit):
 	screen.blit(text,[400,scheight-63])
 	text=font.render("schueler in drittwahl: "+str(drwahlen),1,(0,0,0))
 	screen.blit(text,[400,scheight-33])
-	text=font.render("vortrags in unpassenden zfs: "+str(zfpasstnicht),1,(0,0,0))
+	text=font.render("maxmutrate: "+str(maxmutrate),1,(0,0,0))
 	screen.blit(text,[10,scheight-153])
 	text=font.render("Zeitfenster mit zu wenig Teilnehmern: "+str(zuklein),1,(0,0,0))
 	screen.blit(text,[10,scheight-123])
@@ -362,10 +362,18 @@ def createnewgens(gene,fitlist):
 							tmp=random.choice(allemoeglich)
 						newgene[gcount][b][c]=tmp
 				else:
-					if random.random()<0.5:
-						newgene[gcount][b][c]=choose1[b][c]
+					if c==0:
+						if random.random()<0.5:
+							newgene[gcount][b][c]=choose1[b][c]
+						else:
+							newgene[gcount][b][c]=choose2[b][c]
 					else:
-						newgene[gcount][b][c]=choose2[b][c]
+						if random.random()<0.5:
+							newgene[gcount][b][c]=choose1[b][c]
+						else:
+							newgene[gcount][b][c]=choose2[b][c]
+						while newgene[gcount][b][c]%3==newgene[gcount][b][0]%3:
+							newgene[gcount][b][c]=random.choice(allemoeglich)
 		gcount+=1
 	return newgene
 def geneticsearch():
