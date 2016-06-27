@@ -1,5 +1,5 @@
-#vortragsperfekt: mehrdimensionale liste mit zeitfensterdaten
-#schuelerperfekt: mehrdimensionale liste mit gewählten vortragen
+#vortragsperfekt: liste mit zeitfensterdaten
+#schuelerperfekt: liste mit gewählten vortragen
 #genarray: jeder schüler als einzelner array, pro schüler zwei arrays mit einer zahl die Vortrag und Zeitfenster angibt
 superminuswert=0
 x = 0
