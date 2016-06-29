@@ -24,7 +24,7 @@ levelofdo=0
 mode=0
 minSinZFproV=5
 maxSinZFproV=25
-vortragsanz=88
+vortragsanz=87
 schueleranz=len(schuelerperfekt)
 genanz=1000
 maxmutrate=0.005
@@ -140,7 +140,8 @@ def drawgen(gen,bfit,generation,allfit):
 		gewaehlt.append(0)
 	for a in schuelerperfekt:
 		for b in a:
-			gewaehlt[b]+=1
+			if b>=0:
+				gewaehlt[b]+=1
 	szffail=0
 	sdoublev=0
 	upwahlen=0

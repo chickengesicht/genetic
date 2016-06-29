@@ -10,7 +10,6 @@ def getsperfekt():
 			list = line.split(';')
 			del list[3]
 			for i in range(0,len(list)):
-				list[i]=int(list[i])
+				list[i]=int(list[i])-1
 			schuelerperfekt.append(list)
-	print (schuelerperfekt)
 	return schuelerperfekt
