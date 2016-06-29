@@ -7,7 +7,11 @@ y = 20
 import os
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x,y)
 from multiprocessing import Process,Queue
+<<<<<<< HEAD
+import random,time,pygame,multiprocessing
+=======
 import random,time,pygame
+>>>>>>> origin/master
 pygame.init()
 scwidth=1900
 scheight=1000
@@ -316,6 +320,15 @@ def fitness(gene):
 		haltcount=0
 		for a in vschuel:
 			zfcount=0
+<<<<<<< HEAD
+			minintr=False
+			if a[0]+a[1]+a[2]<maxSinZFproV:
+				if (a[0]>0 and a[1]>0) or (a[1]>0 and a[2]>0) or (a[0]>0 and a[2]>0):
+					minintr=a.index(min(a))
+					fitlist[gencount]+=min(a)*levelofdo
+			elif a[0]+a[1]+a[2]<2*maxSinZFproV and a[0]>0 and a[1]>0 and a[2]>0:
+				minintr=a.index(min(a))
+=======
 			minintr=True
 			if a[0]+a[1]+a[2]<maxSinZFproV:
 				if (a[0]>0 and a[1]>0) or (a[1]>0 and a[2]>0) or (a[0]>0 and a[2]>0):
@@ -323,6 +336,7 @@ def fitness(gene):
 					fitlist[gencount]+=min(a)*levelofdo
 			elif a[0]+a[1]+a[2]<2*maxSinZFproV and a[0]>0 and a[1]>0 and a[2]>0:
 				minintr=False
+>>>>>>> origin/master
 				fitlist[gencount]+=min(a)*levelofdo
 			for b in a:
 				if b!=0:
@@ -333,7 +347,11 @@ def fitness(gene):
 					if levelofdo>0:
 						if b>maxSinZFproV:
 							fitlist[gencount]+=(levelofdo+(b-maxSinZFproV)*levelofdo)
+<<<<<<< HEAD
+						if zfcount!=minintr:
+=======
 						if minintr:
+>>>>>>> origin/master
 							if b<minSinZFproV and b!=0:
 								fitlist[gencount]+=b*levelofdo
 				zfcount+=1
@@ -342,6 +360,18 @@ def fitness(gene):
 			fitlist[gencount]+=(haltcount-vortragsanz)*levelofdo
 		gencount+=1	
 	return fitlist
+def multifit(gene):
+	cpus=multiprocessing.cpu_count()
+	q=Queue()
+	anzpro=len(gene)//(cpus-1)
+	uber=len(gene)-anzpro*(cpus-1)
+	runlen=[]
+	for a in range(cpus-1):
+		runlen.append(anzpro)
+		if uber>0:
+			runlen[a]+=1
+			uber-=1
+	wert=0
 def createnewgens(gene,fitlist):
 	newgene=[]
 	superlist=[]
