@@ -7,11 +7,9 @@ y = 20
 import os
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x,y)
 from multiprocessing import Process,Queue
-<<<<<<< HEAD
 import random,time,pygame,multiprocessing
-=======
-import random,time,pygame
->>>>>>> origin/master
+import schuelerp
+schuelerperfekt=schuelerp.getsperfekt()
 pygame.init()
 scwidth=1900
 scheight=1000
@@ -24,7 +22,6 @@ text=font.render("fitness",1,(0,0,0))
 screen.blit(text,[780,scheight-195])
 text=font.render("generation",1,(0,0,0))
 screen.blit(text,[scwidth-90,scheight-15])
-schuelerperfekt=[]
 vortragsperfekt=[]
 alltimeentwick=[]
 allemoeglich=[]
@@ -33,16 +30,16 @@ levelofdo=0
 mode=0
 minSinZFproV=5
 maxSinZFproV=25
-vortragsanz=67
-schueleranz=320
+vortragsanz=90
+schueleranz=len(schuelerperfekt)
 genanz=1000
 maxmutrate=0.005
 supermutationrate=0.01
 dieweights=[]
 for a in range(genanz):
 	dieweights.append(60.0/(a+3))   #probability function
-for a in range(schueleranz):  #zufällige wahlen zu testzwecken
-	schuelerperfekt.append([random.randint(0,vortragsanz-1),random.randint(0,vortragsanz-1),random.randint(0,vortragsanz-1)])
+#for a in range(schueleranz):  #zufällige wahlen zu testzwecken
+#	schuelerperfekt.append([random.randint(0,vortragsanz-1),random.randint(0,vortragsanz-1),random.randint(0,vortragsanz-1)])
 for a in range(vortragsanz):
 	rin=[random.randint(0,2)]
 	for c in range(2):
@@ -320,7 +317,6 @@ def fitness(gene):
 		haltcount=0
 		for a in vschuel:
 			zfcount=0
-<<<<<<< HEAD
 			minintr=False
 			if a[0]+a[1]+a[2]<maxSinZFproV:
 				if (a[0]>0 and a[1]>0) or (a[1]>0 and a[2]>0) or (a[0]>0 and a[2]>0):
@@ -328,15 +324,6 @@ def fitness(gene):
 					fitlist[gencount]+=min(a)*levelofdo
 			elif a[0]+a[1]+a[2]<2*maxSinZFproV and a[0]>0 and a[1]>0 and a[2]>0:
 				minintr=a.index(min(a))
-=======
-			minintr=True
-			if a[0]+a[1]+a[2]<maxSinZFproV:
-				if (a[0]>0 and a[1]>0) or (a[1]>0 and a[2]>0) or (a[0]>0 and a[2]>0):
-					minintr=False
-					fitlist[gencount]+=min(a)*levelofdo
-			elif a[0]+a[1]+a[2]<2*maxSinZFproV and a[0]>0 and a[1]>0 and a[2]>0:
-				minintr=False
->>>>>>> origin/master
 				fitlist[gencount]+=min(a)*levelofdo
 			for b in a:
 				if b!=0:
@@ -347,11 +334,7 @@ def fitness(gene):
 					if levelofdo>0:
 						if b>maxSinZFproV:
 							fitlist[gencount]+=(levelofdo+(b-maxSinZFproV)*levelofdo)
-<<<<<<< HEAD
 						if zfcount!=minintr:
-=======
-						if minintr:
->>>>>>> origin/master
 							if b<minSinZFproV and b!=0:
 								fitlist[gencount]+=b*levelofdo
 				zfcount+=1
