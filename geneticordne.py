@@ -16,12 +16,6 @@ scheight=1000
 screen=pygame.display.set_mode([scwidth,scheight])
 screen.fill([255,255,255])
 font=pygame.font.Font(None,15)
-pygame.draw.line(screen,[0,0,0],[800,scheight-175],[800,scheight-5])
-pygame.draw.line(screen,[0,0,0],[800,scheight-5],[scwidth-100,scheight-5])
-text=font.render("fitness",1,(0,0,0))
-screen.blit(text,[780,scheight-195])
-text=font.render("generation",1,(0,0,0))
-screen.blit(text,[scwidth-90,scheight-15])
 vortragsperfekt=[]
 alltimeentwick=[]
 allemoeglich=[]
@@ -30,7 +24,7 @@ levelofdo=0
 mode=0
 minSinZFproV=5
 maxSinZFproV=25
-vortragsanz=90
+vortragsanz=88
 schueleranz=len(schuelerperfekt)
 genanz=1000
 maxmutrate=0.005
@@ -70,8 +64,7 @@ def drawgen(gen,bfit,generation,allfit):
 					mode=0
 		if event.type == pygame.MOUSEBUTTONUP:
 			None 
-	pygame.draw.rect(screen,[255,255,255],[0,0,scwidth,scheight-200],0)
-	pygame.draw.rect(screen,[255,255,255],[0,scheight-200,700,200],0)
+	screen.fill([255,255,255])
 	pygame.draw.rect(screen,[33,33,33],[10,scheight-200,130,30],1)
 	if mode==0:
 		text=font.render("Top Gen List",1,(0,0,0))
@@ -132,8 +125,8 @@ def drawgen(gen,bfit,generation,allfit):
 		pygame.draw.rect(screen,[0,0,255],[left,top,15,15],0)
 		left+=25
 		if left>=scwidth-10:
-			left=0
-			top+=25
+			left=800
+			top+=150
 	count=0
 	vschuel=[]
 	for a in range(vortragsanz):
@@ -163,7 +156,7 @@ def drawgen(gen,bfit,generation,allfit):
 			sdoublev+=1
 		if a[0]%3==a[1]%3:
 			szffail+=1
-		if mode==0:
+		if mode==5:
 			startpos=[5+(count*20)%(scwidth),5+((count*20)//(scwidth))*20]
 			endpos=[7+((a[0]//3)*25)%(scwidth-10),scheight-293+(((a[0]//3)*25)//(scwidth-10))*25]
 			if a[0]%3==0:
@@ -187,16 +180,24 @@ def drawgen(gen,bfit,generation,allfit):
 	zuklein=0
 	zfpasstnicht=0
 	dreier=0
+	doppelt=0
 	for a in vschuel:
+		if vcount*25<scwidth-10:
+			hextra=0
+			wteil=vcount*25
+		else:
+			hextra=150
+			wteil=800+vcount*25-scwidth
 		text=font.render(str(a[0]),1,(0,0,0))
-		screen.blit(text,[vcount*25,scheight-283])
+		screen.blit(text,[wteil,hextra+scheight-283])
 		text=font.render(str(a[1]),1,(0,255,0))
-		screen.blit(text,[vcount*25,scheight-263])
+		screen.blit(text,[wteil,hextra+scheight-263])
 		text=font.render(str(a[2]),1,(255,0,255))
-		screen.blit(text,[vcount*25,scheight-243])
-		pygame.draw.line(screen,[100,100,100],[0,scheight-228],[scwidth,scheight-228])
+		screen.blit(text,[wteil,hextra+scheight-243])
+		if hextra==0:
+			pygame.draw.line(screen,[100,100,100],[0,scheight-228],[scwidth,scheight-228])
 		text=font.render(str(gewaehlt[vcount]),1,(255,0,0))
-		screen.blit(text,[vcount*25,scheight-223])
+		screen.blit(text,[wteil,hextra+scheight-223])
 		if a[0]>0:
 			if not (0 in vortragsperfekt[vcount]):
 				zfpasstnicht+=1
@@ -217,8 +218,11 @@ def drawgen(gen,bfit,generation,allfit):
 				zuklein+=1
 		if a[0]>0 and a[1]>0 and a[2]>0:
 			dreier+=1
+		if sum(a)<maxSinZFproV:
+			if (a[0]>0 and a[1]>0) or (a[1]>0 and a[2]>0) or (a[0]>0 and a[2]>0):
+				doppelt+=1
 		vcount+=1
-	text=font.render("Min Teilenehmermodus: "+str(levelofdo),1,(0,0,0))
+	text=font.render("Vortrags in zwei ZF unter "+str(maxSinZFproV)+" anwahlen: "+str(doppelt),1,(0,0,0))
 	screen.blit(text,[400,scheight-153])
 	text=font.render("Schueler zwei mal im selben Vortrag: "+str(sdoublev),1,(0,0,0))
 	screen.blit(text,[400,scheight-123])
@@ -238,28 +242,8 @@ def drawgen(gen,bfit,generation,allfit):
 	screen.blit(text,[10,scheight-63])
 	text=font.render("bestfitness: "+str(bfit),1,(0,0,0))
 	screen.blit(text,[10,scheight-33])
-	pygame.draw.rect(screen,[255,0,0],[800+generation-superminuswert,scheight-5-bfit//10,1,1],1)
-	if superminuswert==0:
-		pygame.draw.rect(screen,[255,0,0],[800+generation,scheight-5-bfit//1000000,1,1],1)
-	else:
-		if generation-superminuswert>=1000:
-			pygame.draw.rect(screen,[255,255,255],[700,scheight-199,scwidth-700,199],0)
-			pygame.draw.line(screen,[0,0,0],[800,scheight-175],[800,scheight-5])
-			pygame.draw.line(screen,[0,0,0],[800,scheight-5],[scwidth-100,scheight-5])
-			text=font.render("fitness",1,(0,0,0))
-			screen.blit(text,[780,scheight-195])
-			text=font.render("generation",1,(0,0,0))
-			screen.blit(text,[scwidth-90,scheight-15])
-			superminuswert+=1000
 	if bfit<1000000 and superminuswert==0:
-		pygame.draw.rect(screen,[255,255,255],[700,scheight-199,scwidth-700,199],0)
 		superminuswert=generation
-		pygame.draw.line(screen,[0,0,0],[800,scheight-175],[800,scheight-5])
-		pygame.draw.line(screen,[0,0,0],[800,scheight-5],[scwidth-100,scheight-5])
-		text=font.render("fitness",1,(0,0,0))
-		screen.blit(text,[780,scheight-195])
-		text=font.render("generation",1,(0,0,0))
-		screen.blit(text,[scwidth-90,scheight-15])
 		alltimeentwick=[]
 	pygame.display.flip()
 def weighted_choice(weights):  #aus dem internet
@@ -318,11 +302,11 @@ def fitness(gene):
 		for a in vschuel:
 			zfcount=0
 			minintr=-1
-			if a[0]+a[1]+a[2]<maxSinZFproV:
+			if sum(a)<maxSinZFproV:
 				if (a[0]>0 and a[1]>0) or (a[1]>0 and a[2]>0) or (a[0]>0 and a[2]>0):
 					minintr=a.index(min(a))
 					fitlist[gencount]+=min(a)*levelofdo
-			elif a[0]+a[1]+a[2]<2*maxSinZFproV and a[0]>0 and a[1]>0 and a[2]>0:
+			elif sum(a)<2*maxSinZFproV and a[0]>0 and a[1]>0 and a[2]>0:
 				minintr=a.index(min(a))
 				fitlist[gencount]+=min(a)*levelofdo
 			for b in a:
