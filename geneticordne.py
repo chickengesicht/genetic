@@ -1,11 +1,12 @@
-#vortragsperfekt: mehrdimensionale liste mit zeitfensterdaten
+#vortragsperfekt: mehrdimensionale liste mit zeitfensterdaten [[v1,v2,v3],[v1,v2,v3]]
 #schuelerperfekt: mehrdimensionale liste mit gewählten vortragen
-#genarray: jeder schüler als einzelner array, pro schüler zwei arrays mit einer zahl die Vortrag und Zeitfenster angibt
+#genarray: jeder schüler als einzelner array, pro schüler zwei arrays mit einer zahl die Vortrag und Zeitfenster angibt 
 superminuswert=0
 x = 0
 y = 20
 import os
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x,y)
+from multiprocessing import Process,Queue
 import random,time,pygame
 pygame.init()
 scwidth=1900
@@ -315,6 +316,14 @@ def fitness(gene):
 		haltcount=0
 		for a in vschuel:
 			zfcount=0
+			minintr=True
+			if a[0]+a[1]+a[2]<maxSinZFproV:
+				if (a[0]>0 and a[1]>0) or (a[1]>0 and a[2]>0) or (a[0]>0 and a[2]>0):
+					minintr=False
+					fitlist[gencount]+=min(a)*levelofdo
+			elif a[0]+a[1]+a[2]<2*maxSinZFproV and a[0]>0 and a[1]>0 and a[2]>0:
+				minintr=False
+				fitlist[gencount]+=min(a)*levelofdo
 			for b in a:
 				if b!=0:
 					haltcount+=1
@@ -324,8 +333,9 @@ def fitness(gene):
 					if levelofdo>0:
 						if b>maxSinZFproV:
 							fitlist[gencount]+=(levelofdo+(b-maxSinZFproV)*levelofdo)
-						if b<minSinZFproV and b!=0:
-							fitlist[gencount]+=b*levelofdo
+						if minintr:
+							if b<minSinZFproV and b!=0:
+								fitlist[gencount]+=b*levelofdo
 				zfcount+=1
 			vcount+=1 
 		if haltcount>vortragsanz:
