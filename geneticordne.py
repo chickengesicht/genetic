@@ -317,7 +317,7 @@ def fitness(gene):
 		haltcount=0
 		for a in vschuel:
 			zfcount=0
-			minintr=False
+			minintr=-1
 			if a[0]+a[1]+a[2]<maxSinZFproV:
 				if (a[0]>0 and a[1]>0) or (a[1]>0 and a[2]>0) or (a[0]>0 and a[2]>0):
 					minintr=a.index(min(a))
