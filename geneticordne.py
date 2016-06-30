@@ -29,7 +29,15 @@ schueleranz=len(schuelerperfekt)
 genanz=1000
 maxmutrate=0.005
 supermutationrate=0.01
+holdvari=200
 dieweights=[]
+gewaehlt=[]
+for a in range(vortragsanz):
+	gewaehlt.append(0)
+for a in schuelerperfekt:
+	for b in a:
+		if b>=0:
+			gewaehlt[b]+=1
 for a in range(genanz):
 	dieweights.append(60.0/(a+3))   #probability function
 #for a in range(schueleranz):  #zufällige wahlen zu testzwecken
@@ -50,6 +58,7 @@ def drawgen(gen,bfit,generation,allfit):
 	global superminuswert
 	global mode
 	global alltimeentwick
+	global gewaehlt
 	alltimeentwick.append(bfit)
 	allfit.sort()
 	font=pygame.font.Font(None,20)
@@ -62,9 +71,18 @@ def drawgen(gen,bfit,generation,allfit):
 					mode=2
 				elif mode==2:
 					mode=0
+			if event.pos[0]>scwidth-150 and event.pos[0]<scwidth-20 and event.pos[1]>scheight-50 and event.pos[1]<scheight-20:
+				with open("verteilung.txt","w") as infile:
+					wcount=1
+					for a in gen:
+						infile.write(str(wcount)+": "+str((a[0]//3)+1)+" - "+str((a[0]%3)+1)+" ; "+str((a[1]//3)+1)+" - "+str((a[1]%3)+1)+"\n")
+						wcount+=1
 		if event.type == pygame.MOUSEBUTTONUP:
 			None 
 	screen.fill([255,255,255])
+	pygame.draw.rect(screen,[33,33,33],[scwidth-150,scheight-50,130,30],1)
+	text=font.render("Write Distribution",1,(0,0,0))
+	screen.blit(text,[scwidth-120,scheight-40])
 	pygame.draw.rect(screen,[33,33,33],[10,scheight-200,130,30],1)
 	if mode==0:
 		text=font.render("Top Gen List",1,(0,0,0))
@@ -135,13 +153,6 @@ def drawgen(gen,bfit,generation,allfit):
 		for z in vz:
 			vschuel[z//3][z%3]+=1
 	font=pygame.font.Font(None,20)
-	gewaehlt=[]
-	for a in range(vortragsanz):
-		gewaehlt.append(0)
-	for a in schuelerperfekt:
-		for b in a:
-			if b>=0:
-				gewaehlt[b]+=1
 	szffail=0
 	sdoublev=0
 	upwahlen=0
@@ -219,7 +230,7 @@ def drawgen(gen,bfit,generation,allfit):
 				zuklein+=1
 		if a[0]>0 and a[1]>0 and a[2]>0:
 			dreier+=1
-		if sum(a)<maxSinZFproV:
+		if gewaehlt[vcount]<maxSinZFproV:
 			if (a[0]>0 and a[1]>0) or (a[1]>0 and a[2]>0) or (a[0]>0 and a[2]>0):
 				doppelt+=1
 		vcount+=1
@@ -276,7 +287,7 @@ def randomgens(anz):
 				result[a][b][1][1]=random.randint(1,vortragsanz)
 	return result"""
 def fitness(gene):
-	global levelofdo
+	global levelofdo,gewaehlt
 	fitlist=[]
 	gencount=0
 	for s in gene:   
@@ -303,11 +314,11 @@ def fitness(gene):
 		for a in vschuel:
 			zfcount=0
 			minintr=-1
-			if sum(a)<maxSinZFproV:
+			if gewaehlt[vcount]<maxSinZFproV:
 				if (a[0]>0 and a[1]>0) or (a[1]>0 and a[2]>0) or (a[0]>0 and a[2]>0):
 					minintr=a.index(min(a))
 					fitlist[gencount]+=min(a)*levelofdo
-			elif sum(a)<2*maxSinZFproV and a[0]>0 and a[1]>0 and a[2]>0:
+			elif gewaehlt[vcount]<2*maxSinZFproV and a[0]>0 and a[1]>0 and a[2]>0:
 				minintr=a.index(min(a))
 				fitlist[gencount]+=min(a)*levelofdo
 			for b in a:
@@ -386,6 +397,7 @@ def createnewgens(gene,fitlist):
 	return newgene
 def geneticsearch():
 	global levelofdo
+	global holdvari
 	generation=0
 	tmp=100000000
 	gene=randomgens(genanz)
@@ -393,8 +405,10 @@ def geneticsearch():
 		fitnesses=fitness(gene)
 		bestgen=gene[fitnesses.index(min(fitnesses))]
 		tmp=min(fitnesses)
-		if tmp<200 and levelofdo<200:
+		if tmp<holdvari and levelofdo<holdvari:
 			levelofdo+=1
+			if holdvari<500:
+				holdvari+=30
 		drawgen(bestgen,tmp,generation,fitnesses[:])
 		print ("bestfitness: "+str(tmp)+"   generation:"+str(generation))
 		gene=createnewgens(gene,fitnesses)
