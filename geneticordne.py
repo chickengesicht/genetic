@@ -315,9 +315,15 @@ def fitness(gene):
 			zfcount=0
 			minintr=-1
 			if gewaehlt[vcount]<maxSinZFproV:
-				if (a[0]>0 and a[1]>0) or (a[1]>0 and a[2]>0) or (a[0]>0 and a[2]>0):
-					minintr=a.index(min(a))
-					fitlist[gencount]+=min(a)*levelofdo
+				if a[0]>0 and a[1]>0:
+					minintr=a.index(min(a[0],a[1]))
+					fitlist[gencount]+=min(a[0],a[1])*levelofdo
+				if a[0]>0 and a[2]>0:
+					minintr=a.index(min(a[0],a[2]))
+					fitlist[gencount]+=min(a[0],a[2])*levelofdo
+				if a[1]>0 and a[2]>0:
+					minintr=a.index(min(a[1],a[2]))
+					fitlist[gencount]+=min(a[1],a[2])*levelofdo
 			elif gewaehlt[vcount]<2*maxSinZFproV and a[0]>0 and a[1]>0 and a[2]>0:
 				minintr=a.index(min(a))
 				fitlist[gencount]+=min(a)*levelofdo
