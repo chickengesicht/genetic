@@ -18,7 +18,9 @@ screen.fill([255,255,255])
 font=pygame.font.Font(None,15)
 vortragsperfekt=[]
 alltimeentwick=[]
+worstentwick=[]
 allemoeglich=[]
+randomtest=[]
 millis = int(round(time.time() * 1000))
 levelofdo=0
 mode=0
@@ -53,14 +55,16 @@ vcount=0
 for a in vortragsperfekt:
 	for b in a:
 		allemoeglich.append(vcount*3+b)
+		randomtest.append(0)
 	vcount+=1
-def drawgen(gen,bfit,generation,allfit):
+def drawgen(gen,bfit,worstfit,generation,allfit):
 	global superminuswert
 	global mode
-	global alltimeentwick
+	global alltimeentwick,worstentwick
 	global gewaehlt
 	alltimeentwick.append(bfit)
 	allfit.sort()
+	worstentwick.append(worstfit)
 	font=pygame.font.Font(None,20)
 	for event in pygame.event.get():
 		if event.type == pygame.MOUSEBUTTONDOWN:
@@ -75,7 +79,7 @@ def drawgen(gen,bfit,generation,allfit):
 				with open("verteilung.txt","w") as infile:
 					wcount=1
 					for a in gen:
-						infile.write(str(wcount)+": "+str((a[0]//3)+1)+" - "+str((a[0]%3)+1)+" ; "+str((a[1]//3)+1)+" - "+str((a[1]%3)+1)+"\n")
+						infile.write(str(wcount)+": "+str((a[0]//3)+1)+" - "+str((a[0]%3)+1)+" ; "+str((a[1]//3)+1)+" - "+str((a[1]%3)+1)+" :: gewaehlt wurde "+str(schuelerperfekt[wcount-1][0]+1)+" - "+str(schuelerperfekt[wcount-1][1]+1)+" - "+str(schuelerperfekt[wcount-1][2]+1)+" \n")
 						wcount+=1
 		if event.type == pygame.MOUSEBUTTONUP:
 			None 
@@ -126,6 +130,19 @@ def drawgen(gen,bfit,generation,allfit):
 			pygame.draw.rect(screen,[255,0,0],[int(10+count/einpgen),rintu,1,1],1)
 			if lastpos:
 				pygame.draw.line(screen,[255,0,0],lastpos,[int(10+count/einpgen),rintu])
+			lastpos=[int(10+count/einpgen),rintu]
+			count+=1
+		count=0
+		lastpos=[]
+		einpgen=len(worstentwick)/(scwidth-90)
+		for a in worstentwick:
+			if int(690-a/einpfit)<0:
+				rintu=0
+			else:
+				rintu=int(690-a/einpfit)
+			pygame.draw.rect(screen,[0,0,255],[int(10+count/einpgen),rintu,1,1],1)
+			if lastpos:
+				pygame.draw.line(screen,[0,0,255],lastpos,[int(10+count/einpgen),rintu])
 			lastpos=[int(10+count/einpgen),rintu]
 			count+=1
 	if mode==0:
@@ -362,7 +379,7 @@ def createnewgens(gene,fitlist):
 	superlist=[]
 	count=0
 	for a in gene:
-		superlist.append([fitlist[count],a])
+		superlist.append([fitlist[count]+random.random(),a])
 		count+=1
 	superlist.sort()
 	gcount=0
@@ -386,6 +403,7 @@ def createnewgens(gene,fitlist):
 						while tmp%3==newgene[gcount][b][0]%3 or tmp//3==newgene[gcount][b][0]//3:
 							tmp=random.choice(allemoeglich)
 						newgene[gcount][b][c]=tmp
+						
 				else:
 					if c==0:
 						if random.random()<0.5:
@@ -397,7 +415,7 @@ def createnewgens(gene,fitlist):
 							newgene[gcount][b][c]=choose1[b][c]
 						else:
 							newgene[gcount][b][c]=choose2[b][c]
-						while newgene[gcount][b][c]%3==newgene[gcount][b][0]%3:
+						while newgene[gcount][b][c]%3==newgene[gcount][b][0]%3 or newgene[gcount][b][c]//3==newgene[gcount][b][0]//3:
 							newgene[gcount][b][c]=random.choice(allemoeglich)
 		gcount+=1
 	return newgene
@@ -415,8 +433,11 @@ def geneticsearch():
 			levelofdo+=1
 			if holdvari<500:
 				holdvari+=30
-		drawgen(bestgen,tmp,generation,fitnesses[:])
+		drawgen(bestgen[:],tmp,max(fitnesses),generation,fitnesses[:])
 		print ("bestfitness: "+str(tmp)+"   generation:"+str(generation))
+		#print (randomtest)
+		for a in range(len(randomtest)):
+			randomtest[a]=0
 		gene=createnewgens(gene,fitnesses)
 		generation+=1
 geneticsearch()
