@@ -31,7 +31,7 @@ schueleranz=len(schuelerperfekt)
 genanz=1000
 maxmutrate=0.005
 supermutationrate=0.01
-holdvari=200
+holdvari=100
 dieweights=[]
 gewaehlt=[]
 for a in range(vortragsanz):
@@ -158,6 +158,9 @@ def drawgen(gen,bfit,worstfit,generation,allfit):
 	top=700
 	for a in range(vortragsanz):
 		pygame.draw.rect(screen,[0,0,255],[left,top,15,15],0)
+		font=pygame.font.Font(None,15)
+		text=font.render(str(a+1),1,(255,255,255))
+		screen.blit(text,[left,top])
 		left+=25
 		if left>=scwidth-10:
 			left=800
@@ -354,12 +357,13 @@ def fitness(gene):
 						if b>maxSinZFproV:
 							fitlist[gencount]+=(levelofdo+(b-maxSinZFproV)*levelofdo)
 						if zfcount!=minintr:
-							if b<minSinZFproV and b!=0:
-								fitlist[gencount]+=b*levelofdo
+							if b<minSinZFproV:
+								if gewaehlt[vcount]>4 and b==max(a):
+									fitlist[gencount]+=(5-b)*levelofdo
+								else:
+									fitlist[gencount]+=b*levelofdo
 				zfcount+=1
 			vcount+=1 
-		if haltcount>vortragsanz:
-			fitlist[gencount]+=(haltcount-vortragsanz)*levelofdo
 		gencount+=1	
 	return fitlist
 def multifit(gene):
@@ -432,7 +436,10 @@ def geneticsearch():
 		if tmp<holdvari and levelofdo<holdvari:
 			levelofdo+=1
 			if holdvari<500:
-				holdvari+=30
+				if holdvari==100:
+					holdvari=220
+				else:
+					holdvari+=30
 		drawgen(bestgen[:],tmp,max(fitnesses),generation,fitnesses[:])
 		print ("bestfitness: "+str(tmp)+"   generation:"+str(generation))
 		#print (randomtest)
