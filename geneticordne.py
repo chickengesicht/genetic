@@ -79,7 +79,7 @@ def drawgen(gen,bfit,worstfit,generation,allfit):
 				with open("verteilung.txt","w") as infile:
 					wcount=1
 					for a in gen:
-						infile.write(str(wcount)+": "+str((a[0]//3)+1)+" - "+str((a[0]%3)+1)+" ; "+str((a[1]//3)+1)+" - "+str((a[1]%3)+1)+" :: gewaehlt wurde "+str(schuelerperfekt[wcount-1][0]+1)+" - "+str(schuelerperfekt[wcount-1][1]+1)+" - "+str(schuelerperfekt[wcount-1][2]+1)+" \n")
+						infile.write(str(wcount)+";"+str((a[0]//3)+1)+";"+str((a[0]%3)+1)+";"+str((a[1]//3)+1)+";"+str((a[1]%3)+1)+"; ;"+str(schuelerperfekt[wcount-1][0]+1)+";"+str(schuelerperfekt[wcount-1][1]+1)+";"+str(schuelerperfekt[wcount-1][2]+1)+" \n")
 						wcount+=1
 		if event.type == pygame.MOUSEBUTTONUP:
 			None 
