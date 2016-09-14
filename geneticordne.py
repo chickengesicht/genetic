@@ -8,15 +8,18 @@ import os
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x,y)
 from multiprocessing import Process,Queue
 import random,time,pygame,multiprocessing
-import schuelerp
+import schuelerp,vortragp
 schuelerperfekt=schuelerp.getsperfekt()
+vortragsperfekt=vortragp.getvperfekt()
+print (schuelerperfekt)
+print ("\n\n")
+print (vortragsperfekt)
 pygame.init()
 scwidth=1900
 scheight=1000
 screen=pygame.display.set_mode([scwidth,scheight])
 screen.fill([255,255,255])
 font=pygame.font.Font(None,15)
-vortragsperfekt=[]
 alltimeentwick=[]
 worstentwick=[]
 allemoeglich=[]
@@ -26,12 +29,12 @@ levelofdo=0
 mode=0
 minSinZFproV=5
 maxSinZFproV=25
-vortragsanz=87
+vortragsanz=len(vortragsperfekt)
 schueleranz=len(schuelerperfekt)
 genanz=1000
 maxmutrate=0.005
 supermutationrate=0.01
-holdvari=100
+holdvari=3000
 dieweights=[]
 gewaehlt=[]
 for a in range(vortragsanz):
@@ -44,13 +47,13 @@ for a in range(genanz):
 	dieweights.append(60.0/(a+3))   #probability function
 #for a in range(schueleranz):  #zufällige wahlen zu testzwecken
 #	schuelerperfekt.append([random.randint(0,vortragsanz-1),random.randint(0,vortragsanz-1),random.randint(0,vortragsanz-1)])
-for a in range(vortragsanz):
+"""for a in range(vortragsanz):
 	rin=[random.randint(0,2)]
-	for c in range(2):
+	for c in range(4):
 		b=random.randint(0,2)
 		if not(b in rin):
 			rin.append(b)
-	vortragsperfekt.append(rin)
+	vortragsperfekt.append(rin)"""
 vcount=0
 for a in vortragsperfekt:
 	for b in a:
@@ -79,7 +82,7 @@ def drawgen(gen,bfit,worstfit,generation,allfit):
 				with open("verteilung.txt","w") as infile:
 					wcount=1
 					for a in gen:
-						infile.write(str(wcount)+";"+str((a[0]//3)+1)+";"+str((a[0]%3)+1)+";"+str((a[1]//3)+1)+";"+str((a[1]%3)+1)+"; ;"+str(schuelerperfekt[wcount-1][0]+1)+";"+str(schuelerperfekt[wcount-1][1]+1)+";"+str(schuelerperfekt[wcount-1][2]+1)+" \n")
+						infile.write(str(wcount)+": "+str((a[0]//3)+1)+" - "+str((a[0]%3)+1)+" ; "+str((a[1]//3)+1)+" - "+str((a[1]%3)+1)+" :: gewaehlt wurde "+str(schuelerperfekt[wcount-1][0]+1)+" - "+str(schuelerperfekt[wcount-1][1]+1)+" - "+str(schuelerperfekt[wcount-1][2]+1)+" \n")
 						wcount+=1
 		if event.type == pygame.MOUSEBUTTONUP:
 			None 
@@ -319,6 +322,8 @@ def fitness(gene):
 		for vz in s:
 			for z in vz:
 				vschuel[z//3][z%3]+=1
+				if (schuelerperfekt[scount][0]==-1 and schuelerperfekt[scount][1]==-1 and schuelerperfekt[scount][2]==-1):
+					continue
 				if z//3!=schuelerperfekt[scount][0] and z//3!=schuelerperfekt[scount][1]:
 					if z//3!=schuelerperfekt[scount][2]:
 						fitlist[gencount]+=5
@@ -433,13 +438,9 @@ def geneticsearch():
 		fitnesses=fitness(gene)
 		bestgen=gene[fitnesses.index(min(fitnesses))]
 		tmp=min(fitnesses)
-		if tmp<holdvari and levelofdo<holdvari:
-			levelofdo+=1
-			if holdvari<500:
-				if holdvari==100:
-					holdvari=220
-				else:
-					holdvari+=30
+		if generation>holdvari:
+			levelofdo+=1;
+			holdvari+=3000;
 		drawgen(bestgen[:],tmp,max(fitnesses),generation,fitnesses[:])
 		print ("bestfitness: "+str(tmp)+"   generation:"+str(generation))
 		#print (randomtest)
