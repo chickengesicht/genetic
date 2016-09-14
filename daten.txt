@@ -1,0 +1,7 @@
+Schueler in unpassendem vortrag: 85
+Schueler in drittwahl:52
+Vorträge in drei Zeitfenstern: 1
+Belegte Zeitfenster: 65
+Generation:20331
+Mutation Rate:0.07
+Fitness:137
